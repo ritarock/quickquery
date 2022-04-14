@@ -20,27 +20,26 @@ func RunQuey(ctx *cli.Context) error {
 	}
 	defer os.Remove(".sqlite.db")
 
-	query := formingQuery(ctx.Args().First())
-	dml := query[0]
+	query, dml := formingQuery(ctx.Args().First())
 	switch dml {
 	case "SELECT":
-		if err := db.SelectQuery(strings.Join(query, " ")); err != nil {
+		if err := db.SelectQuery(query); err != nil {
 			return err
 		}
 	case "INSERT":
-		q := convertInsertQuery(strings.Join(query, " "), fileName)
+		q := convertInsertQuery(query, fileName)
 		if err := db.InsertQuery(q); err != nil {
 			return err
 		}
 		db.OutputCsv(fileName)
 	case "UPDATE":
-		q := convertUpdateQuery(strings.Join(query, " "), fileName)
+		q := convertUpdateQuery(query, fileName)
 		if err := db.UpdateQuery(q); err != nil {
 			return err
 		}
 		db.OutputCsv(fileName)
 	case "DELETE":
-		q := convertDeleteQuery(strings.Join(query, " "), fileName)
+		q := convertDeleteQuery(query, fileName)
 		if err := db.DeleteQuery(q); err != nil {
 			return err
 		}
@@ -52,8 +51,7 @@ func RunQuey(ctx *cli.Context) error {
 }
 
 func parseFileName(arg string) (string, error) {
-	path := strings.Split(strings.TrimSpace(arg), " ")
-	for _, v := range path {
+	for _, v := range strings.Split(strings.TrimSpace(arg), " ") {
 		if strings.Contains(v, ".csv") {
 			return v, nil
 		}
@@ -61,12 +59,11 @@ func parseFileName(arg string) (string, error) {
 	return "", errors.New("not find csv file")
 }
 
-func formingQuery(arg string) []string {
+func formingQuery(arg string) (query, dml string) {
 	q := []string{}
-
 	for _, v := range strings.Split(strings.TrimSpace(arg), " ") {
 		switch v {
-		case "select", "from", "insert", "values", "into", "update", "set", "where", "delete":
+		case SELECT, INSERT, UPDATE, DELETE, FROM, VALUES, INTO, SET, WHERE:
 			q = append(q, strings.ToUpper(v))
 		default:
 			if strings.Contains(v, ".csv") {
@@ -76,7 +73,7 @@ func formingQuery(arg string) []string {
 			q = append(q, v)
 		}
 	}
-	return q
+	return strings.Join(q, " "), q[0]
 }
 
 func convertInsertQuery(query, fileName string) string {
@@ -94,7 +91,6 @@ func convertInsertQuery(query, fileName string) string {
 			" VALUES " +
 			insertValuesValidation(insertQ[0])
 	}
-
 }
 
 func convertUpdateQuery(query, fileName string) string {
