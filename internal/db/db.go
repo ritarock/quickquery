@@ -7,7 +7,6 @@ import (
 	"os"
 	"os/exec"
 	"reflect"
-	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -27,7 +26,6 @@ func CreateTable(fileName string) error {
 		os.Remove(".sqlite.db")
 		return errors.New("failed create table")
 	}
-
 	return nil
 }
 
@@ -44,13 +42,13 @@ func OutputCsv(fileName string) {
 func SelectQuery(query string) error {
 	db, err := sql.Open(DRIVER, DATA_SOURCE)
 	if err != nil {
-		return errors.New("not connect db")
+		return errors.New("an error occurred")
 	}
 	defer db.Close()
 
 	rows, err := db.Query(query)
 	if err != nil {
-		return errors.New("faild run query")
+		return errors.New("failed run query")
 	}
 	defer rows.Close()
 
@@ -89,7 +87,7 @@ func SelectQuery(query string) error {
 func InsertQuery(query string) error {
 	db, err := sql.Open(DRIVER, DATA_SOURCE)
 	if err != nil {
-		return errors.New("not connect db")
+		return errors.New("an error occurred")
 	}
 	defer db.Close()
 
@@ -101,30 +99,10 @@ func InsertQuery(query string) error {
 	return nil
 }
 
-func Describe(table string) ([]string, error) {
-	columns := []string{}
-	command := fmt.Sprintf(`sqlite3 .sqlite.db \
-	"PRAGMA TABLE_INFO('%v')"`, table[:len(table)-4])
-
-	output, err := exec.Command("sh", "-c", command).Output()
-	if err != nil {
-		return columns, errors.New("an error occurred")
-	}
-
-	lines := strings.Split(string(output), "\n")
-	for i, line := range lines {
-		if len(lines) == i+1 {
-			break
-		}
-		columns = append(columns, strings.Split(line, "|")[1])
-	}
-	return columns, nil
-}
-
 func UpdateQuery(query string) error {
 	db, err := sql.Open(DRIVER, DATA_SOURCE)
 	if err != nil {
-		return errors.New("not connect db")
+		return errors.New("an error occurred")
 	}
 	defer db.Close()
 
@@ -139,13 +117,14 @@ func UpdateQuery(query string) error {
 func DeleteQuery(query string) error {
 	db, err := sql.Open(DRIVER, DATA_SOURCE)
 	if err != nil {
-		return errors.New("not connect db")
+		return errors.New("an error occurred")
 	}
 	defer db.Close()
 
 	_, err = db.Exec(query)
 	if err != nil {
-		return errors.New("cannot delete")
+		return errors.New("cannot delete query")
 	}
+
 	return nil
 }

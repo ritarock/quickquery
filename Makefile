@@ -7,7 +7,7 @@ install:
 	go install $(INSTALL_PATH)
 
 build:
-	go build -o $(BINDIR)/quickquery cmd/quickquery/main.go
+	go build -o $(BINDIR)/quickquery ./main.go
 
 test:
 	go test $(shell go list ./... |grep internal)

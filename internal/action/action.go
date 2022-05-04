@@ -3,15 +3,14 @@ package action
 import (
 	"errors"
 	"os"
-	"regexp"
 	"strings"
 
 	"github.com/ritarock/quickquery/internal/db"
-	"github.com/urfave/cli/v2"
+	qquery "github.com/ritarock/quickquery/internal/query"
 )
 
-func RunQuey(ctx *cli.Context) error {
-	fileName, err := parseFileName(ctx.Args().First())
+func Run(arg string) error {
+	fileName, err := parseFileName(arg)
 	if err != nil {
 		return err
 	}
@@ -20,148 +19,46 @@ func RunQuey(ctx *cli.Context) error {
 	}
 	defer os.Remove(".sqlite.db")
 
-	query, dml := formingQuery(ctx.Args().First())
+	query, dml := qquery.FormingQuery(arg)
 	switch dml {
 	case "SELECT":
 		if err := db.SelectQuery(query); err != nil {
 			return err
 		}
 	case "INSERT":
-		q := convertInsertQuery(query, fileName)
+		q := qquery.ConvertInsertQuery(query, fileName)
 		if err := db.InsertQuery(q); err != nil {
 			return err
 		}
 		db.OutputCsv(fileName)
 	case "UPDATE":
-		q := convertUpdateQuery(query, fileName)
+		q := qquery.ConvertUpdateQuery(query)
 		if err := db.UpdateQuery(q); err != nil {
 			return err
 		}
 		db.OutputCsv(fileName)
 	case "DELETE":
-		q := convertDeleteQuery(query, fileName)
+		q := qquery.ConvertDeleteQuery(query)
 		if err := db.DeleteQuery(q); err != nil {
 			return err
 		}
 		db.OutputCsv(fileName)
-	default:
-		return errors.New("cannot parse query")
 	}
+
 	return nil
 }
 
-func parseFileName(arg string) (string, error) {
-	for _, v := range strings.Split(strings.TrimSpace(arg), " ") {
-		if strings.Contains(v, ".csv") {
+func parseFileName(input string) (string, error) {
+	for _, v := range strings.Split(strings.TrimSpace(input), " ") {
+		if strings.Contains(v, ".csv") && fileExists(v) {
 			return v, nil
 		}
 	}
+
 	return "", errors.New("not find csv file")
 }
 
-func formingQuery(arg string) (query, dml string) {
-	q := []string{}
-	for _, v := range strings.Split(strings.TrimSpace(arg), " ") {
-		switch v {
-		case SELECT, INSERT, UPDATE, DELETE, FROM, VALUES, INTO, SET, WHERE:
-			q = append(q, strings.ToUpper(v))
-		default:
-			if strings.Contains(v, ".csv") {
-				q = append(q, v[:len(v)-4])
-				continue
-			}
-			q = append(q, v)
-		}
-	}
-	return strings.Join(q, " "), q[0]
-}
-
-func convertInsertQuery(query, fileName string) string {
-	pt := regexp.MustCompile(`\(.*?\)`)
-	insertQ := pt.FindAllString(query, -1)
-	if len(insertQ) > 1 {
-		return "INSERT INTO " +
-			fileName[:len(fileName)-4] + " " +
-			insertColumnsValidation(insertQ[0]) +
-			" VALUES " +
-			insertValuesValidation(insertQ[1])
-	} else {
-		return "INSERT INTO " +
-			fileName[:len(fileName)-4] +
-			" VALUES " +
-			insertValuesValidation(insertQ[0])
-	}
-}
-
-func convertUpdateQuery(query, fileName string) string {
-	q := query
-	pt1 := regexp.MustCompile(`^.*SET `)
-	pt2 := regexp.MustCompile(` WHERE .*$`)
-	q = pt1.ReplaceAllString(q, "")
-	q = pt2.ReplaceAllString(q, "")
-	updateValuesValidation(q)
-
-	return pt1.FindString(query) + updateValuesValidation(q) + pt2.FindString(query)
-
-}
-
-func insertColumnsValidation(str string) string {
-	str = strings.Replace(str, "(", "", 1)
-	str = strings.Replace(str, ")", "", 1)
-	var s []string
-	for _, v := range strings.Split(str, ",") {
-		s = append(s, strings.TrimSpace(v))
-	}
-
-	return "(" + strings.Join(s, ",") + ")"
-}
-
-func insertValuesValidation(str string) string {
-	str = strings.Replace(str, "(", "", 1)
-	str = strings.Replace(str, ")", "", 1)
-	var s []string
-	for _, v := range strings.Split(str, ",") {
-		s = append(s, "\""+strings.TrimSpace(v)+"\"")
-	}
-	return "(" + strings.Join(s, ",") + ")"
-}
-
-func updateValuesValidation(str string) string {
-	var s []string
-	if strings.Contains(str, ",") {
-		for _, v := range strings.Split(str, ",") {
-			s = append(s,
-				strings.Split(v, "=")[0]+
-					" = \""+
-					strings.TrimSpace(strings.Split(v, "=")[1])+
-					"\"")
-		}
-		return strings.Join(s, ",")
-	} else {
-		s = append(s,
-			strings.Split(str, "=")[0]+
-				" = \""+
-				strings.TrimSpace(strings.Split(str, "=")[1])+
-				"\"")
-		return strings.Join(s, ",")
-	}
-}
-
-func convertDeleteQuery(query, fileName string) string {
-	q := query
-	pt := regexp.MustCompile(`^DELETE FROM .* WHERE`)
-	q = pt.ReplaceAllString(q, "")
-
-	return pt.FindString(query) + deleteValuesValidation(q)
-}
-
-func deleteValuesValidation(str string) string {
-	var s []string
-	s = append(s,
-		strings.Split(str, "=")[0]+
-			" = \""+
-			strings.TrimSpace(strings.Split(str, "=")[1])+
-			"\"")
-
-	return strings.Join(s, " ")
+func fileExists(fileName string) bool {
+	_, err := os.Stat(fileName)
+	return err == nil
 }
