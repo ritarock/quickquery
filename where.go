@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -17,14 +16,29 @@ func (q Query) getWhere() (whereClause WhereClause, found bool) {
 	}
 
 	clause := []string{}
-	if strings.Contains(word, "=") {
-		split := strings.Split(word, "=")
-		clause = append(clause, []string{split[0], "=", split[1]}...)
+	if strings.Contains(word, ">=") {
+		split := strings.Split(word, ">=")
+		clause = append(clause, []string{split[0], ">=", split[1]}...)
+	} else if strings.Contains(word, "<=") {
+		split := strings.Split(word, "<=")
+		clause = append(clause, []string{split[0], "<=", split[1]}...)
+	} else {
+		if strings.Contains(word, "=") {
+			split := strings.Split(word, "=")
+			clause = append(clause, []string{split[0], "=", split[1]}...)
+		}
+		if strings.Contains(word, ">") {
+			split := strings.Split(word, ">")
+			clause = append(clause, []string{split[0], ">", split[1]}...)
+		}
+		if strings.Contains(word, "<") {
+			split := strings.Split(word, "<")
+			clause = append(clause, []string{split[0], "<", split[1]}...)
+		}
 	}
 
 	whereClause = append(whereClause, clause)
 
-	fmt.Println(whereClause)
 	return whereClause, true
 }
 
@@ -40,6 +54,22 @@ func (m Mapper) byWhere(whereClause WhereClause) Mapper {
 			switch condition {
 			case "=":
 				if mm[key] == value {
+					newMapper = append(newMapper, mm)
+				}
+			case ">":
+				if mm[key] > value {
+					newMapper = append(newMapper, mm)
+				}
+			case "<":
+				if mm[key] < value {
+					newMapper = append(newMapper, mm)
+				}
+			case ">=":
+				if mm[key] >= value {
+					newMapper = append(newMapper, mm)
+				}
+			case "<=":
+				if mm[key] <= value {
 					newMapper = append(newMapper, mm)
 				}
 			}

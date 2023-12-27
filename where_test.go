@@ -14,49 +14,181 @@ func TestQuery_getWhere(t *testing.T) {
 	}{
 		{
 			query: Query{
-				"SELECT", "*", "FROM", "./sample.csv",
 				"WHERE", "id", "=", "2",
 			},
 			want: WhereClause{
-				{
-					"id", "=", "2",
-				},
+				{"id", "=", "2"},
 			},
 			wantFound: true,
 		},
 		{
 			query: Query{
-				"SELECT", "*", "FROM", "./sample.csv",
 				"WHERE", "id=2",
 			},
 			want: WhereClause{
-				{
-					"id", "=", "2",
-				},
+				{"id", "=", "2"},
 			},
 			wantFound: true,
 		},
 		{
 			query: Query{
-				"SELECT", "*", "FROM", "./sample.csv",
 				"WHERE", "id=", "2",
 			},
 			want: WhereClause{
-				{
-					"id", "=", "2",
-				},
+				{"id", "=", "2"},
 			},
 			wantFound: true,
 		},
 		{
 			query: Query{
-				"SELECT", "*", "FROM", "./sample.csv",
 				"WHERE", "id", "=2",
 			},
 			want: WhereClause{
-				{
-					"id", "=", "2",
-				},
+				{"id", "=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", ">", "2",
+			},
+			want: WhereClause{
+				{"id", ">", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id>2",
+			},
+			want: WhereClause{
+				{"id", ">", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id>", "2",
+			},
+			want: WhereClause{
+				{"id", ">", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", ">2",
+			},
+			want: WhereClause{
+				{"id", ">", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", "<", "2",
+			},
+			want: WhereClause{
+				{"id", "<", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id<2",
+			},
+			want: WhereClause{
+				{"id", "<", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id<", "2",
+			},
+			want: WhereClause{
+				{"id", "<", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", "<2",
+			},
+			want: WhereClause{
+				{"id", "<", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", ">=", "2",
+			},
+			want: WhereClause{
+				{"id", ">=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id>=2",
+			},
+			want: WhereClause{
+				{"id", ">=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id>=", "2",
+			},
+			want: WhereClause{
+				{"id", ">=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", ">=2",
+			},
+			want: WhereClause{
+				{"id", ">=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", "<=", "2",
+			},
+			want: WhereClause{
+				{"id", "<=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id<=2",
+			},
+			want: WhereClause{
+				{"id", "<=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id<=", "2",
+			},
+			want: WhereClause{
+				{"id", "<=", "2"},
+			},
+			wantFound: true,
+		},
+		{
+			query: Query{
+				"WHERE", "id", "<=2",
+			},
+			want: WhereClause{
+				{"id", "<=", "2"},
 			},
 			wantFound: true,
 		},
