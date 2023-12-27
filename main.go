@@ -45,8 +45,13 @@ func main() {
 		selectClause = table[0]
 	}
 
-	result := mapper.bySelect(selectClause)
-	result.Result()
+	whereClause, found := query.getWhere()
+	if !found {
+		result := mapper.bySelect(selectClause)
+		result.Result()
+	}
+	mapper.byWhere(whereClause).bySelect(selectClause).Result()
+
 }
 
 func validateArgs(args []string) error {

@@ -5,9 +5,9 @@ import (
 	"strings"
 )
 
-type Clause string
-type Query []Clause
+type Query []string
 type SelectClause []string
+type WhereClause [][]string
 type Mapper []map[string]string
 
 func (q Query) validate() error {
@@ -98,10 +98,10 @@ func argToQuery(arg string) Query {
 	for _, v := range strings.Split(tmp, " ") {
 		clause := strings.ToLower(v)
 		switch clause {
-		case "select", "from":
-			query = append(query, Clause(strings.ToUpper(clause)))
+		case "select", "from", "where":
+			query = append(query, strings.ToUpper(clause))
 		default:
-			query = append(query, Clause(clause))
+			query = append(query, clause)
 		}
 	}
 
