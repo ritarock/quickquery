@@ -18,6 +18,8 @@ func TestReadTable(t *testing.T) {
 				{"1", "name1", "user1"},
 				{"2", "name2", "user2"},
 				{"3", "name3", "user3"},
+				{"4", "name4", "user4"},
+				{"5", "name5", "user5"},
 			},
 		},
 	}
@@ -36,7 +38,7 @@ func Test_readFile(t *testing.T) {
 	}{
 		{
 			path: "../sample.csv",
-			want: "id, name, user\n1, name1, user1\n2, name2, user2\n3, name3, user3\n",
+			want: "id, name, user\n1, name1, user1\n2, name2, user2\n3, name3, user3\n4, name4, user4\n5, name5, user5\n",
 		},
 	}
 
