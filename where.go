@@ -31,7 +31,7 @@ func (q Query) getWhere() (whereClause WhereClause, found bool) {
 		return makeWhereClause(whereClause, condition, "<"), true
 	}
 
-	return whereClause, true
+	return whereClause, false
 }
 
 func (m Mapper) byWhere(whereClause WhereClause) Mapper {
