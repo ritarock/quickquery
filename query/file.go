@@ -1,7 +1,6 @@
-package main
+package query
 
 import (
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -9,20 +8,14 @@ import (
 
 type Table [][]string
 
-func readFile(path string) (Table, error) {
-	f, err := os.Open(path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	b, err := io.ReadAll(f)
+func ReadTable(path string) (Table, error) {
+	f, err := readFile(path)
 	if err != nil {
 		return nil, err
 	}
 
 	var table Table
-	lines := strings.Split(string(b), "\n")
+	lines := strings.Split(f, "\n")
 	for _, cols := range lines {
 		columns := []string{}
 		for _, col := range strings.Split(cols, ",") {
@@ -39,8 +32,17 @@ func readFile(path string) (Table, error) {
 	return table, nil
 }
 
-func (t Table) Result() {
-	for _, v := range t {
-		fmt.Println(strings.Join(v, ", "))
+func readFile(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
 	}
+	defer f.Close()
+
+	b, err := io.ReadAll(f)
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }

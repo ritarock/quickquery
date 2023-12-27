@@ -1,4 +1,4 @@
-package main
+package query
 
 import (
 	"testing"
@@ -6,17 +6,17 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestQuery_getWhere(t *testing.T) {
+func TestQuery_GetWhere(t *testing.T) {
 	tests := []struct {
 		query     Query
-		want      WhereClause
+		want      WhereQ
 		wantFound bool
 	}{
 		{
 			query: Query{
 				"WHERE", "id", "=", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "=", "2"},
 			},
 			wantFound: true,
@@ -25,7 +25,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id=2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "=", "2"},
 			},
 			wantFound: true,
@@ -34,7 +34,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id=", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "=", "2"},
 			},
 			wantFound: true,
@@ -43,7 +43,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", "=2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "=", "2"},
 			},
 			wantFound: true,
@@ -52,7 +52,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", ">", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">", "2"},
 			},
 			wantFound: true,
@@ -61,7 +61,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id>2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">", "2"},
 			},
 			wantFound: true,
@@ -70,7 +70,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id>", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">", "2"},
 			},
 			wantFound: true,
@@ -79,7 +79,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", ">2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">", "2"},
 			},
 			wantFound: true,
@@ -88,7 +88,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", "<", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<", "2"},
 			},
 			wantFound: true,
@@ -97,7 +97,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id<2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<", "2"},
 			},
 			wantFound: true,
@@ -106,7 +106,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id<", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<", "2"},
 			},
 			wantFound: true,
@@ -115,7 +115,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", "<2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<", "2"},
 			},
 			wantFound: true,
@@ -124,7 +124,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", ">=", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">=", "2"},
 			},
 			wantFound: true,
@@ -133,7 +133,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id>=2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">=", "2"},
 			},
 			wantFound: true,
@@ -142,7 +142,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id>=", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">=", "2"},
 			},
 			wantFound: true,
@@ -151,7 +151,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", ">=2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", ">=", "2"},
 			},
 			wantFound: true,
@@ -160,7 +160,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", "<=", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<=", "2"},
 			},
 			wantFound: true,
@@ -169,7 +169,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id<=2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<=", "2"},
 			},
 			wantFound: true,
@@ -178,7 +178,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id<=", "2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<=", "2"},
 			},
 			wantFound: true,
@@ -187,7 +187,7 @@ func TestQuery_getWhere(t *testing.T) {
 			query: Query{
 				"WHERE", "id", "<=2",
 			},
-			want: WhereClause{
+			want: WhereQ{
 				{"id", "<=", "2"},
 			},
 			wantFound: true,
@@ -195,37 +195,42 @@ func TestQuery_getWhere(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		got, found := test.query.getWhere()
+		got, found := test.query.GetWhere()
 		assert.Equal(t, test.wantFound, found)
 		assert.Equal(t, test.want, got)
 	}
 }
 
-func TestMapper_byWhere(t *testing.T) {
+func Test_makeCondition(t *testing.T) {
 	tests := []struct {
-		mapper      Mapper
-		whereClause WhereClause
-		want        Mapper
+		whereQ    WhereQ
+		condition string
+		operator  string
+		want      WhereQ
 	}{
 		{
-			mapper: Mapper{
-				map[string]string{"id": "1", "name": "name1", "user": "user1"},
-				map[string]string{"id": "2", "name": "name2", "user": "user2"},
-				map[string]string{"id": "3", "name": "name3", "user": "user3"},
+			whereQ:    WhereQ{},
+			condition: "id=1",
+			operator:  "=",
+			want: WhereQ{
+				{"id", "=", "1"},
 			},
-			whereClause: WhereClause{
-				{
-					"id", "=", "2",
-				},
+		},
+		{
+			whereQ: WhereQ{
+				{"id", "=", "1"},
 			},
-			want: Mapper{
-				map[string]string{"id": "2", "name": "name2", "user": "user2"},
+			condition: "user>=user1",
+			operator:  ">=",
+			want: WhereQ{
+				{"id", "=", "1"},
+				{"user", ">=", "user1"},
 			},
 		},
 	}
 
 	for _, test := range tests {
-		got := test.mapper.byWhere(test.whereClause)
+		got := makeCondition(test.whereQ, test.condition, test.operator)
 		assert.Equal(t, test.want, got)
 	}
 }
