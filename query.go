@@ -98,7 +98,7 @@ func argToQuery(arg string) Query {
 	for _, v := range strings.Split(tmp, " ") {
 		clause := strings.ToLower(v)
 		switch clause {
-		case "select", "from", "where":
+		case "select", "from", "where", "and":
 			query = append(query, strings.ToUpper(clause))
 		default:
 			query = append(query, clause)
