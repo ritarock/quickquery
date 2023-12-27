@@ -5,8 +5,8 @@ const HELP = `quickquery can search from csv like sql
 Usage:
   quickquery "select * from ./filepath"
 
-USE:
+OK:
   SELECT, FROM, WHERE, AND, ORDER BY
 
-DON'T USE:
+NG:
   OR, LIMIT, GROUP BY`
