@@ -16,15 +16,16 @@ Usage:
   quickquery "select * from ./filepath"
 
 USE:
-  SELECT, FROM, WHERE AND
+  SELECT, FROM, WHERE, AND, ORDER BY
 
 DON'T USE:
-  OR, OREDER BY
+  OR, LIMIT, GROUP BY
 ```
 
 ## Sample
 ```
-$ qq "select * from ./sample.csv where id >= 2 AND name = name3"
+$ qq "select * from ./sample.csv where id >= 2 AND id <= 3 ORDER BY id DESC"
 id, name, user
 3, name3, user3
+2, name2, user2
 ```

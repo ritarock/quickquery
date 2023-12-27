@@ -2,6 +2,7 @@ package query
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 )
 
@@ -23,7 +24,7 @@ func (t Table) ToMap() Mapper {
 	return mapper
 }
 
-func (m Mapper) Result(selectQ SelectQ, whereQ WhereQ) {
+func (m Mapper) Result(selectQ SelectQ, whereQ WhereQ, orderQ OrderQ) {
 	if len(whereQ) != 0 {
 		m = m.adaptedWhere(whereQ)
 	}
@@ -37,7 +38,28 @@ func (m Mapper) Result(selectQ SelectQ, whereQ WhereQ) {
 		table = append(table, line)
 	}
 
-	for _, v := range table {
+	var index int
+	var order string
+	for k, v := range orderQ {
+		for i, vv := range table[0] {
+			if k == vv {
+				index = i
+				break
+			}
+		}
+		order = v
+	}
+	t := table[1:]
+	sort.Slice(t, func(i, j int) bool {
+		if order == "ASC" {
+			return t[i][index] < t[j][index]
+		} else {
+			return t[i][index] > t[j][index]
+		}
+	})
+
+	fmt.Println(strings.Join(table[0], ", "))
+	for _, v := range table[1:] {
 		fmt.Println(strings.Join(v, ", "))
 	}
 }

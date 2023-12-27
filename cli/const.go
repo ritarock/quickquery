@@ -6,7 +6,7 @@ Usage:
   quickquery "select * from ./filepath"
 
 USE:
-  SELECT, FROM, WHERE AND
+  SELECT, FROM, WHERE, AND, ORDER BY
 
 DON'T USE:
-  OR, OREDER BY`
+  OR, LIMIT, GROUP BY`

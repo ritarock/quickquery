@@ -44,8 +44,10 @@ func Run() error {
 		selectQ = table[0]
 	}
 
-	whereQ, _ := query.GetWhere()
-	mapper.Result(selectQ, whereQ)
+	whereQ := query.GetWhere()
+	orderQ := query.GetOrder(table[0])
+
+	mapper.Result(selectQ, whereQ, orderQ)
 
 	return nil
 }

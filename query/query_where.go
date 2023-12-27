@@ -1,10 +1,13 @@
 package query
 
-import "strings"
+import (
+	"regexp"
+	"strings"
+)
 
 type WhereQ [][]string
 
-func (q Query) GetWhere() (whereQ WhereQ, found bool) {
+func (q Query) GetWhere() (whereQ WhereQ) {
 	var condition string
 	for i, v := range q {
 		if v == "WHERE" {
@@ -12,7 +15,12 @@ func (q Query) GetWhere() (whereQ WhereQ, found bool) {
 		}
 	}
 	if condition == "" {
-		return nil, false
+		return nil
+	}
+
+	if strings.Contains(condition, "ORDERBY") {
+		re := regexp.MustCompile(`ORDERBY.*$`)
+		condition = re.ReplaceAllString(condition, "")
 	}
 
 	if strings.Contains(condition, "AND") {
@@ -38,26 +46,26 @@ func (q Query) GetWhere() (whereQ WhereQ, found bool) {
 				continue
 			}
 		}
-		return whereQ, true
+		return whereQ
 	}
 
 	if strings.Contains(condition, ">=") {
-		return makeCondition(whereQ, condition, ">="), true
+		return makeCondition(whereQ, condition, ">=")
 	}
 	if strings.Contains(condition, "<=") {
-		return makeCondition(whereQ, condition, "<="), true
+		return makeCondition(whereQ, condition, "<=")
 	}
 	if strings.Contains(condition, "=") {
-		return makeCondition(whereQ, condition, "="), true
+		return makeCondition(whereQ, condition, "=")
 	}
 	if strings.Contains(condition, ">") {
-		return makeCondition(whereQ, condition, ">"), true
+		return makeCondition(whereQ, condition, ">")
 	}
 	if strings.Contains(condition, "<") {
-		return makeCondition(whereQ, condition, "<"), true
+		return makeCondition(whereQ, condition, "<")
 	}
 
-	return whereQ, false
+	return whereQ
 }
 
 func makeCondition(whereQ WhereQ,
