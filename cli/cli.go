@@ -3,6 +3,7 @@ package cli
 import (
 	"errors"
 	"flag"
+	"fmt"
 
 	q "github.com/ritarock/quickquery/query"
 )
@@ -12,6 +13,7 @@ func Run() error {
 	flag.Parse()
 
 	if *help {
+		fmt.Println(HELP)
 		return nil
 	}
 
