@@ -5,39 +5,31 @@ import (
 )
 
 func (q Query) getWhere() (whereClause WhereClause, found bool) {
-	var word string
+	var condition string
 	for i, v := range q {
 		if v == "WHERE" {
-			word = strings.Join(q[i+1:], "")
+			condition = strings.Join(q[i+1:], "")
 		}
 	}
-	if word == "" {
+	if condition == "" {
 		return whereClause, false
 	}
 
-	clause := []string{}
-	if strings.Contains(word, ">=") {
-		split := strings.Split(word, ">=")
-		clause = append(clause, []string{split[0], ">=", split[1]}...)
-	} else if strings.Contains(word, "<=") {
-		split := strings.Split(word, "<=")
-		clause = append(clause, []string{split[0], "<=", split[1]}...)
-	} else {
-		if strings.Contains(word, "=") {
-			split := strings.Split(word, "=")
-			clause = append(clause, []string{split[0], "=", split[1]}...)
-		}
-		if strings.Contains(word, ">") {
-			split := strings.Split(word, ">")
-			clause = append(clause, []string{split[0], ">", split[1]}...)
-		}
-		if strings.Contains(word, "<") {
-			split := strings.Split(word, "<")
-			clause = append(clause, []string{split[0], "<", split[1]}...)
-		}
+	if strings.Contains(condition, ">=") {
+		return makeWhereClause(whereClause, condition, ">="), true
 	}
-
-	whereClause = append(whereClause, clause)
+	if strings.Contains(condition, "<=") {
+		return makeWhereClause(whereClause, condition, "<="), true
+	}
+	if strings.Contains(condition, "=") {
+		return makeWhereClause(whereClause, condition, "="), true
+	}
+	if strings.Contains(condition, ">") {
+		return makeWhereClause(whereClause, condition, ">"), true
+	}
+	if strings.Contains(condition, "<") {
+		return makeWhereClause(whereClause, condition, "<"), true
+	}
 
 	return whereClause, true
 }
@@ -74,8 +66,15 @@ func (m Mapper) byWhere(whereClause WhereClause) Mapper {
 				}
 			}
 		}
-
 	}
 
 	return newMapper
+}
+
+func makeWhereClause(whereClause WhereClause, condition string, comparisonOperatorsSet string) WhereClause {
+	clause := []string{}
+	split := strings.Split(condition, comparisonOperatorsSet)
+	clause = append(clause, []string{split[0], comparisonOperatorsSet, split[1]}...)
+	whereClause = append(whereClause, clause)
+	return whereClause
 }
