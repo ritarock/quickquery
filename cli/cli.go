@@ -22,6 +22,11 @@ func Run() error {
 		return err
 	}
 
+	if args[0] == "help" {
+		fmt.Println(HELP)
+		return nil
+	}
+
 	query := q.ArgToQuery(args[0])
 	if err := query.Validate(); err != nil {
 		return err
