@@ -1,0 +1,142 @@
+package entity
+
+import (
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+)
+
+func TestNewQuery(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		input string
+		want  Query
+	}{
+		{
+			name:  "basic select query",
+			input: "SELECT name FROM users.csv",
+			want:  Query{Clauses: []string{"SELECT", "name", "FROM", "users.csv"}},
+		},
+		{
+			name:  "query with where clause",
+			input: "SELECT name FROM users.csv WHERE id = 10",
+			want:  Query{Clauses: []string{"SELECT", "name", "FROM", "users.csv", "WHERE", "id", "=", "10"}},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := NewQuery(test.input)
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestQuery_Validate(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name     string
+		query    Query
+		hasError bool
+	}{
+		{
+			name:     "valid query",
+			query:    Query{Clauses: []string{"SELECT", "name", "FROM", "users.csv"}},
+			hasError: false,
+		},
+		{
+			name:     "invalid query: no select",
+			query:    Query{Clauses: []string{"FROM", "users.csv"}},
+			hasError: true,
+		},
+		{
+			name:     "invalid query: empty query",
+			query:    Query{Clauses: []string{}},
+			hasError: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			err := test.query.Validate()
+			if test.hasError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestQuery_GetFile(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name     string
+		query    Query
+		want     string
+		hasError bool
+	}{
+		{
+			name:     "valid query with filename",
+			query:    Query{Clauses: []string{"SELECT", "name", "FROM", "users.csv"}},
+			want:     "users.csv",
+			hasError: false,
+		},
+		{
+			name:     "failed: no FROM",
+			query:    Query{Clauses: []string{"SELECT", "name", "users.csv"}},
+			want:     "",
+			hasError: true,
+		},
+		{
+			name:     "failed: no csvfile",
+			query:    Query{Clauses: []string{"SELECT", "name", "FROM"}},
+			want:     "",
+			hasError: true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := test.query.GetFile()
+			if test.hasError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, test.want, got)
+			}
+		})
+	}
+}
+
+func TestQuery_GetSelect(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		query Query
+		want  []string
+	}{
+		{
+			name:  "select single column",
+			query: Query{Clauses: []string{"SELECT", "name", "FROM", "users.csv"}},
+			want:  []string{"name"},
+		},
+		{
+			name:  "select multiple columns",
+			query: Query{Clauses: []string{"SELECT", "id", ",", "name", "FROM", "users.csv"}},
+			want:  []string{"id", "name"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := test.query.GetSelect()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
