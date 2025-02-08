@@ -1,6 +1,8 @@
 package entity
 
-func (q Query) GetSelect() []string {
+type Select []string
+
+func (q Query) GetSelect() Select {
 	var columns []string
 	for i := 1; i < len(q.Clauses); i++ {
 		if q.Clauses[i] == "FROM" {

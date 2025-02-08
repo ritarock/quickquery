@@ -11,7 +11,7 @@ func TestQuery_GetSelect(t *testing.T) {
 	tests := []struct {
 		name  string
 		query Query
-		want  []string
+		want  Select
 	}{
 		{
 			name: "select single column",
