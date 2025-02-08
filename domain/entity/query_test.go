@@ -140,3 +140,37 @@ func TestQuery_GetSelect(t *testing.T) {
 		})
 	}
 }
+
+func TestQuery_GetWhere(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		query Query
+		want  []string
+	}{
+		{
+			name: "query with where clause",
+			query: Query{Clauses: []string{
+				"SELECT", "id", "FROM", "users.csv", "WHERE", "id", "=", "3",
+			}},
+			want: []string{
+				"id", "=", "3",
+			},
+		},
+		{
+			name: "query without where clause",
+			query: Query{Clauses: []string{
+				"SELECT", "id", "FROM", "users.csv",
+			}},
+			want: []string{},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := test.query.GetWhere()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}

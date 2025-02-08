@@ -103,3 +103,19 @@ func (q Query) GetSelect() []string {
 
 	return columns
 }
+
+func (q Query) GetWhere() []string {
+	conditions := []string{}
+	whereFound := false
+	for i := 0; i < len(q.Clauses); i++ {
+		if q.Clauses[i] == "WHERE" {
+			whereFound = true
+			continue
+		}
+		if whereFound {
+			conditions = append(conditions, q.Clauses[i])
+		}
+	}
+
+	return conditions
+}

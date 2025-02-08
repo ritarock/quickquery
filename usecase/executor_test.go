@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"quickquery/domain/entity"
+	"quickquery/infrastructure/file"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,6 +21,7 @@ func (m *MockCSVServer) ReadCSV(filename string) ([][]string, error) {
 }
 
 func TestQueryExecutor_Execute(t *testing.T) {
+	t.Parallel()
 	testData := [][]string{
 		{"id", "name"},
 		{"1", "name1"},
@@ -90,5 +92,41 @@ func TestQueryExecutor_Execute(t *testing.T) {
 			}
 		})
 
+	}
+}
+
+func TestQueryExecutor_matchesWhereConditions(t *testing.T) {
+	executor := NewQueryExecutor(&file.CSVReader{})
+	headers := []string{"id", "name"}
+	t.Parallel()
+	tests := []struct {
+		name       string
+		row        []string
+		headers    []string
+		conditions []string
+		want       bool
+	}{
+		{
+			name:       "match condition",
+			row:        []string{"1", "name1"},
+			headers:    headers,
+			conditions: []string{"id", "=", "1"},
+			want:       true,
+		},
+		{
+			name:       "non-match condition",
+			row:        []string{"1", "name1"},
+			headers:    headers,
+			conditions: []string{"id", "=", "3"},
+			want:       false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := executor.matchesWhereConditions(test.row, test.headers, test.conditions)
+			assert.Equal(t, test.want, got)
+		})
 	}
 }
