@@ -61,19 +61,21 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 	}
 
 	whereConditions := query.GetWhere()
+	if whereConditions.IsWhere() {
+		records.FilterRows(whereConditions)
+	}
 	if len(whereConditions) > 0 {
-		for _, whereCondition := range whereConditions {
-			records.FilterRows(whereCondition)
-		}
+		records.FilterRows(whereConditions)
 	}
 
 	sortConditions := query.GetOrder()
-	if len(sortConditions) > 0 {
-		records.SortRows(sortConditions[0], sortConditions[1])
+	if sortConditions.IsOrder() {
+		records.SortRows(sortConditions)
+
 	}
 
 	limitConditions := query.GetLimit()
-	if len(limitConditions) > 0 {
+	if limitConditions.IsLimit() {
 		records.LimitRows(limitConditions)
 	}
 
