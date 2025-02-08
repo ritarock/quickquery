@@ -27,7 +27,7 @@ func NewQuery(arg string) Query {
 			if currentToken.Len() > 0 {
 				token := currentToken.String()
 				switch strings.ToLower(token) {
-				case "select", "from", "where":
+				case "select", "from", "where", "and":
 					clauses = append(clauses, strings.ToUpper(token))
 				default:
 					clauses = append(clauses, token)
@@ -42,7 +42,7 @@ func NewQuery(arg string) Query {
 			if currentToken.Len() > 0 {
 				token := currentToken.String()
 				switch strings.ToLower(token) {
-				case "select", "from", "where":
+				case "select", "from", "where", "and":
 					clauses = append(clauses, strings.ToUpper(token))
 				default:
 					clauses = append(clauses, token)
@@ -104,17 +104,40 @@ func (q Query) GetSelect() []string {
 	return columns
 }
 
-func (q Query) GetWhere() []string {
-	conditions := []string{}
-	whereFound := false
-	for i := 0; i < len(q.Clauses); i++ {
-		if q.Clauses[i] == "WHERE" {
-			whereFound = true
-			continue
+func (q Query) GetWhere() [][]string {
+	conditions := [][]string{}
+	whereIndex := -1
+
+	for i, v := range q.Clauses {
+		if v == "WHERE" {
+			whereIndex = i + 1
+			break
 		}
-		if whereFound {
-			conditions = append(conditions, q.Clauses[i])
+	}
+
+	if whereIndex > 0 {
+		var where []string
+		for _, v := range q.Clauses[whereIndex:] {
+			if v == "AND" {
+				continue
+			}
+			where = append(where, v)
 		}
+
+		for i := 0; i < len(where); i += 3 {
+			if i+2 >= len(where) {
+				break
+			}
+			current := []string{}
+
+			key := where[i]
+			operator := where[i+1]
+			value := where[i+2]
+
+			current = append(current, key, operator, value)
+			conditions = append(conditions, current)
+		}
+
 	}
 
 	return conditions

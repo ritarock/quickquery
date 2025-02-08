@@ -61,11 +61,15 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 	}
 
 	whereConditions := query.GetWhere()
-	records.FilterRows(whereConditions)
+	if len(whereConditions) > 0 {
+		for _, whereCondition := range whereConditions {
+			records.FilterRows(whereCondition)
+		}
+	}
 
 	result := &Result{
 		Headers: make([]string, len(columnIndices)),
-		Rows:    make([][]string, len(records)),
+		Rows:    make([][]string, len(records)-1),
 	}
 
 	for i, idx := range columnIndices {

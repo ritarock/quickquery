@@ -23,6 +23,14 @@ func TestNewQuery(t *testing.T) {
 			input: "SELECT name FROM users.csv WHERE id = 10",
 			want:  Query{Clauses: []string{"SELECT", "name", "FROM", "users.csv", "WHERE", "id", "=", "10"}},
 		},
+		{
+			name:  "2 queries with where clause",
+			input: "SELECT name FROM users.csv WHERE id = 10 and user_name = user10",
+			want: Query{Clauses: []string{
+				"SELECT", "name", "FROM", "users.csv", "WHERE",
+				"id", "=", "10", "AND", "user_name", "=", "user10",
+			}},
+		},
 	}
 
 	for _, test := range tests {
@@ -146,15 +154,15 @@ func TestQuery_GetWhere(t *testing.T) {
 	tests := []struct {
 		name  string
 		query Query
-		want  []string
+		want  [][]string
 	}{
 		{
 			name: "query with where clause",
 			query: Query{Clauses: []string{
 				"SELECT", "id", "FROM", "users.csv", "WHERE", "id", "=", "3",
 			}},
-			want: []string{
-				"id", "=", "3",
+			want: [][]string{
+				{"id", "=", "3"},
 			},
 		},
 		{
@@ -162,7 +170,7 @@ func TestQuery_GetWhere(t *testing.T) {
 			query: Query{Clauses: []string{
 				"SELECT", "id", "FROM", "users.csv",
 			}},
-			want: []string{},
+			want: [][]string{},
 		},
 	}
 
