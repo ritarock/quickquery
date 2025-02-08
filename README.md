@@ -9,6 +9,24 @@ $ make install
 
 ## Usage
 ```
+$ qq -h 
+quickquery can search from csv like sql
+
+Supported:
+        SELECT, FROM, WHERE, AND, ORDER BY, LIMIT
+
+Unsupported:
+        OR, IN, GROUP BY, etc...
+
+Usage:
+  quickquery [flags]
+
+Flags:
+  -h, --help   help for quickquery
+```
+
+## Example
+```
 $ cat ./sample.csv
 id,team_id,name,note
 1,1,name1,note1
@@ -26,7 +44,7 @@ id  team_id  name   note
 2   1        name2  note2
 6   1        name6  note5
 
-$ qq "select id, team_id, name from ./sample.csv where team_id >= 2 and id <= 5 order by id desc limit 2"
+$ qq "select id, team_id, name from ./sample.csv where id <= 5 and team_id >= 2 order by id desc limit 2"
 id  team_id  name
 --  -------  ----
 5   4        name5
