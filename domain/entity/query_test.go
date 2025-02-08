@@ -31,6 +31,14 @@ func TestNewQuery(t *testing.T) {
 				"id", "=", "10", "AND", "user_name", "=", "user10",
 			}},
 		},
+		{
+			name:  "query with order clause",
+			input: "SELECT name FROM users.csv ORDER BY id DESC",
+			want: Query{Clauses: []string{
+				"SELECT", "name", "FROM", "users.csv",
+				"ORDER", "BY", "id", "DESC",
+			}},
+		},
 	}
 
 	for _, test := range tests {
@@ -172,12 +180,58 @@ func TestQuery_GetWhere(t *testing.T) {
 			}},
 			want: [][]string{},
 		},
+		{
+			name: "query with order clause",
+			query: Query{Clauses: []string{
+				"SELECT", "id", "FROM", "users.csv",
+				"WHERE", "id", "=", "3", "ORDER", "BY", "id", "DESC",
+			}},
+			want: [][]string{
+				{"id", "=", "3"},
+			},
+		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			t.Parallel()
 			got := test.query.GetWhere()
+			assert.Equal(t, test.want, got)
+		})
+	}
+}
+
+func TestQuery_GetOrder(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		query Query
+		want  []string
+	}{
+		{
+			name: "query with order by desc",
+			query: Query{Clauses: []string{
+				"SELECT", "id", "FROM", "users.csv", "ORDER", "BY", "id", "DESC",
+			}},
+			want: []string{
+				"id", "DESC",
+			},
+		},
+		{
+			name: "query with order by",
+			query: Query{Clauses: []string{
+				"SELECT", "id", "FROM", "users.csv", "ORDER", "BY", "id",
+			}},
+			want: []string{
+				"id", "ASC",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := test.query.GetOrder()
 			assert.Equal(t, test.want, got)
 		})
 	}

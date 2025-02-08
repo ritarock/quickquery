@@ -27,7 +27,7 @@ func NewQuery(arg string) Query {
 			if currentToken.Len() > 0 {
 				token := currentToken.String()
 				switch strings.ToLower(token) {
-				case "select", "from", "where", "and":
+				case "select", "from", "where", "and", "order", "by", "desc", "asc":
 					clauses = append(clauses, strings.ToUpper(token))
 				default:
 					clauses = append(clauses, token)
@@ -42,7 +42,7 @@ func NewQuery(arg string) Query {
 			if currentToken.Len() > 0 {
 				token := currentToken.String()
 				switch strings.ToLower(token) {
-				case "select", "from", "where", "and":
+				case "select", "from", "where", "and", "order", "by", "desc", "asc":
 					clauses = append(clauses, strings.ToUpper(token))
 				default:
 					clauses = append(clauses, token)
@@ -57,7 +57,7 @@ func NewQuery(arg string) Query {
 	if currentToken.Len() > 0 {
 		token := currentToken.String()
 		switch strings.ToLower(token) {
-		case "select", "from", "where":
+		case "select", "from", "where", "and", "order", "by", "desc", "asc":
 			clauses = append(clauses, strings.ToUpper(token))
 		default:
 			clauses = append(clauses, token)
@@ -125,6 +125,9 @@ func (q Query) GetWhere() [][]string {
 		}
 
 		for i := 0; i < len(where); i += 3 {
+			if where[i] == "ORDER" {
+				break
+			}
 			if i+2 >= len(where) {
 				break
 			}
@@ -138,6 +141,36 @@ func (q Query) GetWhere() [][]string {
 			conditions = append(conditions, current)
 		}
 
+	}
+
+	return conditions
+}
+
+func (q Query) GetOrder() []string {
+	var conditions []string
+	orderIndex := -1
+
+	for i, v := range q.Clauses {
+		if v == "ORDER" {
+			orderIndex = i
+			break
+		}
+	}
+
+	if orderIndex > 0 {
+		conditions = append(conditions, q.Clauses[orderIndex+2])
+		if len(q.Clauses[orderIndex:]) == 3 {
+			conditions = append(conditions, "ASC")
+			return conditions
+		}
+		switch q.Clauses[orderIndex+3] {
+		case "ASC":
+			conditions = append(conditions, "ASC")
+		case "DESC":
+			conditions = append(conditions, "DESC")
+		default:
+			conditions = append(conditions, "ASC")
+		}
 	}
 
 	return conditions

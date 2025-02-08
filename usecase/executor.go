@@ -67,6 +67,11 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 		}
 	}
 
+	sortConditions := query.GetOrder()
+	if len(sortConditions) > 0 {
+		records.SortRows(sortConditions[0], sortConditions[1])
+	}
+
 	result := &Result{
 		Headers: make([]string, len(columnIndices)),
 		Rows:    make([][]string, len(records)-1),

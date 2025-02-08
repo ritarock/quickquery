@@ -1,6 +1,10 @@
 package entity
 
-import "strconv"
+import (
+	"sort"
+	"strconv"
+	"strings"
+)
 
 type Records [][]string
 
@@ -62,4 +66,35 @@ func (r *Records) FilterRows(condition []string) {
 	}
 
 	*r = filtered
+}
+
+func (r *Records) SortRows(column, order string) {
+	columnIndex := -1
+	for i, header := range (*r)[0] {
+		if strings.EqualFold(column, header) {
+			columnIndex = i
+			break
+		}
+	}
+
+	if columnIndex == -1 {
+		return
+	}
+
+	isAsc := order == "ASC"
+	if isAsc {
+		sorted := Records{(*r)[0]}
+		rows := (*r)[1:]
+		sort.Slice(rows, func(i, j int) bool {
+			return rows[i][columnIndex] < rows[j][columnIndex]
+		})
+		sorted = append(sorted, rows...)
+	} else {
+		sorted := Records{(*r)[0]}
+		rows := (*r)[1:]
+		sort.Slice(rows, func(i, j int) bool {
+			return rows[i][columnIndex] > rows[j][columnIndex]
+		})
+		sorted = append(sorted, rows...)
+	}
 }

@@ -111,3 +111,57 @@ func TestRecord_FilterRows(t *testing.T) {
 		})
 	}
 }
+
+func TestRecords_SortRows(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		records Records
+		column  string
+		order   string
+		want    Records
+	}{
+		{
+			name: "order by asc",
+			records: Records{
+				{"id", "user_id", "name"},
+				{"1", "user1", "name1"},
+				{"3", "user3", "name3"},
+				{"2", "user2", "name2"},
+			},
+			column: "id",
+			order:  "ASC",
+			want: [][]string{
+				{"id", "user_id", "name"},
+				{"1", "user1", "name1"},
+				{"2", "user2", "name2"},
+				{"3", "user3", "name3"},
+			},
+		},
+		{
+			name: "order by desc",
+			records: Records{
+				{"id", "user_id", "name"},
+				{"1", "user1", "name1"},
+				{"3", "user3", "name3"},
+				{"2", "user2", "name2"},
+			},
+			column: "id",
+			order:  "DESC",
+			want: [][]string{
+				{"id", "user_id", "name"},
+				{"3", "user3", "name3"},
+				{"2", "user2", "name2"},
+				{"1", "user1", "name1"},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.records.SortRows(test.column, test.order)
+			assert.Equal(t, test.want, test.records)
+		})
+	}
+}

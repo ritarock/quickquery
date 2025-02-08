@@ -70,6 +70,37 @@ func TestQueryExecutor_Execute(t *testing.T) {
 			},
 			hasError: false,
 		},
+		{
+			name: "select with where clause",
+			query: entity.Query{
+				Clauses: []string{"SELECT", "id", ",", "name", "FROM", "users.csv", "WHERE", "id", ">", "2"},
+			},
+			mockData:  testData,
+			mockError: nil,
+			want: &Result{
+				Headers: []string{"id", "name"},
+				Rows: [][]string{
+					{"3", "name3"},
+				},
+			},
+			hasError: false,
+		},
+		{
+			name: "select with order clause",
+			query: entity.Query{
+				Clauses: []string{"SELECT", "id", ",", "name", "FROM", "users.csv", "WHERE", "id", ">=", "2", "ORDER", "BY", "id", "DESC"},
+			},
+			mockData:  testData,
+			mockError: nil,
+			want: &Result{
+				Headers: []string{"id", "name"},
+				Rows: [][]string{
+					{"3", "name3"},
+					{"2", "name2"},
+				},
+			},
+			hasError: false,
+		},
 	}
 
 	for _, test := range tests {
