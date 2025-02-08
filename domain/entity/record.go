@@ -98,3 +98,9 @@ func (r *Records) SortRows(column, order string) {
 		sorted = append(sorted, rows...)
 	}
 }
+
+func (r *Records) LimitRows(limit string) {
+	li, _ := strconv.Atoi(limit)
+
+	*r = (*r)[:li+1]
+}

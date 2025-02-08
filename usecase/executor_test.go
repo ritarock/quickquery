@@ -101,6 +101,22 @@ func TestQueryExecutor_Execute(t *testing.T) {
 			},
 			hasError: false,
 		},
+		{
+			name: "select with limit clause",
+			query: entity.Query{
+				Clauses: []string{"SELECT", "*", "FROM", "users.csv", "LIMIT", "2"},
+			},
+			mockData:  testData,
+			mockError: nil,
+			want: &Result{
+				Headers: []string{"id", "name"},
+				Rows: [][]string{
+					{"1", "name1"},
+					{"2", "name2"},
+				},
+			},
+			hasError: false,
+		},
 	}
 
 	for _, test := range tests {

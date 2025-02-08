@@ -27,7 +27,7 @@ func NewQuery(arg string) Query {
 			if currentToken.Len() > 0 {
 				token := currentToken.String()
 				switch strings.ToLower(token) {
-				case "select", "from", "where", "and", "order", "by", "desc", "asc":
+				case "select", "from", "where", "and", "order", "by", "desc", "asc", "limit":
 					clauses = append(clauses, strings.ToUpper(token))
 				default:
 					clauses = append(clauses, token)
@@ -42,7 +42,7 @@ func NewQuery(arg string) Query {
 			if currentToken.Len() > 0 {
 				token := currentToken.String()
 				switch strings.ToLower(token) {
-				case "select", "from", "where", "and", "order", "by", "desc", "asc":
+				case "select", "from", "where", "and", "order", "by", "desc", "asc", "limit":
 					clauses = append(clauses, strings.ToUpper(token))
 				default:
 					clauses = append(clauses, token)
@@ -57,7 +57,7 @@ func NewQuery(arg string) Query {
 	if currentToken.Len() > 0 {
 		token := currentToken.String()
 		switch strings.ToLower(token) {
-		case "select", "from", "where", "and", "order", "by", "desc", "asc":
+		case "select", "from", "where", "and", "order", "by", "desc", "asc", "limit":
 			clauses = append(clauses, strings.ToUpper(token))
 		default:
 			clauses = append(clauses, token)
@@ -171,6 +171,24 @@ func (q Query) GetOrder() []string {
 		default:
 			conditions = append(conditions, "ASC")
 		}
+	}
+
+	return conditions
+}
+
+func (q Query) GetLimit() string {
+	var conditions string
+	limitIndex := -1
+
+	for i, v := range q.Clauses {
+		if v == "LIMIT" {
+			limitIndex = i
+			break
+		}
+	}
+
+	if limitIndex > 0 {
+		conditions = q.Clauses[limitIndex+1]
 	}
 
 	return conditions

@@ -72,6 +72,11 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 		records.SortRows(sortConditions[0], sortConditions[1])
 	}
 
+	limitConditions := query.GetLimit()
+	if len(limitConditions) > 0 {
+		records.LimitRows(limitConditions)
+	}
+
 	result := &Result{
 		Headers: make([]string, len(columnIndices)),
 		Rows:    make([][]string, len(records)-1),

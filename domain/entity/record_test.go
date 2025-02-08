@@ -165,3 +165,37 @@ func TestRecords_SortRows(t *testing.T) {
 		})
 	}
 }
+
+func TestRecords_LimitRows(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name    string
+		records Records
+		limit   string
+		want    Records
+	}{
+		{
+			name: "order by asc",
+			records: Records{
+				{"id", "user_id", "name"},
+				{"1", "user1", "name1"},
+				{"2", "user2", "name2"},
+				{"3", "user3", "name3"},
+			},
+			limit: "2",
+			want: [][]string{
+				{"id", "user_id", "name"},
+				{"1", "user1", "name1"},
+				{"2", "user2", "name2"},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			test.records.LimitRows(test.limit)
+			assert.Equal(t, test.want, test.records)
+		})
+	}
+}

@@ -236,3 +236,29 @@ func TestQuery_GetOrder(t *testing.T) {
 		})
 	}
 }
+
+func TestQuery_GetLimit(t *testing.T) {
+	t.Parallel()
+	tests := []struct {
+		name  string
+		query Query
+		want  string
+	}{
+		{
+			name: "query with limit",
+			query: Query{Clauses: []string{
+				"SELECT", "id", "FROM", "users.csv", "LIMIT", "3",
+			}},
+			want: "3",
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			t.Parallel()
+			got := test.query.GetLimit()
+			assert.Equal(t, test.want, got)
+		})
+	}
+
+}

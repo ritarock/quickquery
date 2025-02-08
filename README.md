@@ -26,10 +26,9 @@ id  team_id  name   note
 2   1        name2  note2
 6   1        name6  note5
 
-$ qq "select id, team_id, name from ./sample.csv where team_id >= 2 and id <= 5 order by id desc"
+$ qq "select id, team_id, name from ./sample.csv where team_id >= 2 and id <= 5 order by id desc limit 2"
 id  team_id  name
 --  -------  ----
 5   4        name5
 4   3        name4
-3   2        name3
 ```
