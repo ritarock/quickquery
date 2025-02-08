@@ -8,4 +8,4 @@ build:
 	go build -o ${BINDIR}/qq .
 
 install:
-	go install
+	go install -o qq
