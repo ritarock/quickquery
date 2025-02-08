@@ -30,7 +30,8 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 		return nil, err
 	}
 
-	records, err := e.csvReader.ReadCSV(filename)
+	readCsv, err := e.csvReader.ReadCSV(filename)
+	var records entity.Records = readCsv
 	if err != nil {
 		return nil, err
 	}
@@ -60,23 +61,18 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 	}
 
 	whereConditions := query.GetWhere()
-	var filteredRows [][]string
-	for i := 1; i < len(records); i++ {
-		if e.matchesWhereConditions(records[i], headers, whereConditions) {
-			filteredRows = append(filteredRows, records[i])
-		}
-	}
+	records.FilterRows(whereConditions)
 
 	result := &Result{
 		Headers: make([]string, len(columnIndices)),
-		Rows:    make([][]string, len(filteredRows)),
+		Rows:    make([][]string, len(records)),
 	}
 
 	for i, idx := range columnIndices {
 		result.Headers[i] = headers[idx]
 	}
 
-	for i, row := range filteredRows {
+	for i, row := range records[1:] {
 		result.Rows[i] = make([]string, len(columnIndices))
 		for j, idx := range columnIndices {
 			result.Rows[i][j] = row[idx]
@@ -84,34 +80,4 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 	}
 
 	return result, nil
-}
-
-func (e *QueryExecutor) matchesWhereConditions(row, headers, conditions []string) bool {
-	if len(conditions) == 0 {
-		return true
-	}
-
-	for i := 0; i < len(conditions); i += 3 {
-		if i+2 >= len(conditions) {
-			break
-		}
-
-		column := conditions[i]
-		operator := conditions[i+1]
-		value := conditions[i+2]
-
-		var columnIndex int
-		for j, header := range headers {
-			if strings.EqualFold(column, header) {
-				columnIndex = j
-				break
-			}
-		}
-
-		if operator == "=" && row[columnIndex] != value {
-			return false
-		}
-	}
-
-	return true
 }
