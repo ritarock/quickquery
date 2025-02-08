@@ -12,10 +12,10 @@ var rootCmd = &cobra.Command{
 	Long: `quickquery can search from csv like sql
 
 Supported:
-	SELECT, FROM, WHERE, AND, ORDER BY, LIMIT
+  SELECT, FROM, WHERE, AND, ORDER BY, LIMIT
 
 Unsupported:
-	OR, IN, GROUP BY, etc...
+  OR, IN, GROUP BY, etc...
 
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
