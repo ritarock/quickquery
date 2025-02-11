@@ -64,9 +64,6 @@ func (e *QueryExecutor) Execute(query entity.Query) (*Result, error) {
 	if whereConditions.IsWhere() {
 		records.FilterRows(whereConditions)
 	}
-	if len(whereConditions) > 0 {
-		records.FilterRows(whereConditions)
-	}
 
 	sortConditions := query.GetOrder()
 	if sortConditions.IsOrder() {
