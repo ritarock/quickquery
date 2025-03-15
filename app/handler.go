@@ -1,26 +1,23 @@
-package cli
+package app
 
 import (
 	"errors"
 	"fmt"
 	"os"
-	"quickquery/domain/entity"
-	"quickquery/infrastructure/file"
-	"quickquery/usecase"
+	"quickquery/entity"
+	"quickquery/infra/file"
 	"strings"
 	"text/tabwriter"
 )
 
 type Handler struct {
-	queryExecutor *usecase.QueryExecutor
+	queryExecutor QueryExecutor
 }
 
 func NewHandler() *Handler {
 	csvReader := file.NewCSVReader()
-	queryExecutor := usecase.NewQueryExecutor(csvReader)
-	return &Handler{
-		queryExecutor: queryExecutor,
-	}
+	queryExecutor := NewQueryExecutor(csvReader)
+	return &Handler{queryExecutor: *queryExecutor}
 }
 
 func (h *Handler) Run(args []string) error {
@@ -36,7 +33,7 @@ func (h *Handler) Run(args []string) error {
 	return nil
 }
 
-func (h *Handler) displayResults(result *usecase.Result) {
+func (h *Handler) displayResults(result *Result) {
 	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
 	fmt.Fprintln(w, strings.Join(result.Headers, "\t"))
 

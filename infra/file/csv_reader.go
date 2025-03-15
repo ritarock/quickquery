@@ -3,7 +3,7 @@ package file
 import (
 	"encoding/csv"
 	"os"
-	"quickquery/domain/entity"
+	"quickquery/entity"
 )
 
 type CSVReader struct{}

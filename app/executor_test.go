@@ -1,7 +1,7 @@
-package usecase
+package app
 
 import (
-	"quickquery/domain/entity"
+	"quickquery/entity"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

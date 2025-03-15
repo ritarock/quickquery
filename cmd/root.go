@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"os"
-	"quickquery/interface/cli"
+	"quickquery/app"
 
 	"github.com/spf13/cobra"
 )
@@ -19,7 +19,7 @@ Unsupported:
 
 `,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		handler := cli.NewHandler()
+		handler := app.NewHandler()
 		return handler.Run(args)
 	},
 }
