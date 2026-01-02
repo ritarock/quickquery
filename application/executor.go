@@ -9,11 +9,11 @@ type Executor struct {
 	queryExecutor QueryExecutor
 }
 
-func NewExecutor(reader CSVReader, queryExecutor QueryExecutor) (*Executor, error) {
+func NewExecutor(reader CSVReader, queryExecutor QueryExecutor) *Executor {
 	return &Executor{
 		reader:        reader,
 		queryExecutor: queryExecutor,
-	}, nil
+	}
 }
 
 func (e *Executor) Execute(query *model.Query) (*model.QueryResult, error) {

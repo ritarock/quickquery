@@ -129,8 +129,7 @@ func TestExecutor_Execute(t *testing.T) {
 
 			test.setupMocks(mockCSVReader, mockQueryExecutor)
 
-			executor, err := NewExecutor(mockCSVReader, mockQueryExecutor)
-			assert.NoError(t, err)
+			executor := NewExecutor(mockCSVReader, mockQueryExecutor)
 
 			query, err := model.NewQuery(test.query)
 			assert.NoError(t, err)
