@@ -6,11 +6,14 @@ import (
 	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/ritarock/quickquery/application"
 )
 
 type Executor struct {
 	db *sql.DB
 }
+
+var _ application.QueryExecutor = (*Executor)(nil)
 
 func NewExecutor() (*Executor, error) {
 	db, err := sql.Open("sqlite3", ":memory:")

@@ -5,9 +5,13 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
+	"github.com/ritarock/quickquery/application"
 )
 
 type Reader struct{}
+
+var _ application.CSVReader = (*Reader)(nil)
 
 func NewReader() *Reader {
 	return &Reader{}
