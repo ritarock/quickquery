@@ -15,4 +15,4 @@ build:
 	go build -o ${BINDIR}/quickquery .
 
 install:
-	go install -o quickquery
+	go install .
